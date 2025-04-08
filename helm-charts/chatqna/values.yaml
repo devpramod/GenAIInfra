@@ -12,7 +12,8 @@ image:
   # Uncomment the following line to set desired image pull policy if needed, as one of Always, IfNotPresent, Never.
   # pullPolicy: ""
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: "test_latest"
+  pullPolicy: Never
 
 imagePullSecrets: []
 nameOverride: ""
@@ -146,7 +147,7 @@ global:
   HUGGINGFACEHUB_API_TOKEN: "insert-your-huggingface-token-here"
   # OPENAI_API_KEY will be set to 'none' if left at default value
   OPENAI_API_KEY: "insert-your-openai-api-key-here"
-  LLM_MODEL: "meta-llama/Meta-Llama-3-8B-Instruct"
+  LLM_MODEL: "insert-your-llm-model-id-here"
   # If LLM_SERVER_HOST_IP is set, it will be used instead of TGI or vLLM
   LLM_SERVER_HOST_IP: "insert-your-llm-server-host-ip-here"
   # service account name to be shared with all parent/child charts.
