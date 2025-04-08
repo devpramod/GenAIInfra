@@ -35,8 +35,11 @@ spec:
         - name: {{ .Release.Name }}
           env:
             - name: LLM_SERVER_HOST_IP
+              # If global.LLM_SERVER_HOST_IP is set, use it instead of internal services
+              {{- if eq (include "chatqna.useGlobalLLMServer" .) "true" }}
+              value: {{ .Values.global.LLM_SERVER_HOST_IP }}
               # For FaqGen, llm-uservice is used.
-              {{- if eq .Values.CHATQNA_TYPE "CHATQNA_FAQGEN"}}
+              {{- else if eq .Values.CHATQNA_TYPE "CHATQNA_FAQGEN"}}
               value: {{ .Release.Name }}-llm-uservice
               {{- else }}
               {{- if .Values.vllm.enabled }}
@@ -48,7 +51,9 @@ spec:
             - name: LLM_SERVER_PORT
               value: "80"
             - name: LLM_MODEL
-              {{- if .Values.vllm.enabled }}
+              {{- if eq (include "chatqna.useGlobalLLMServer" .) "true" }}
+              value: {{ .Values.global.LLM_MODEL | quote }}
+              {{- else if .Values.vllm.enabled }}
               value: {{ .Values.vllm.LLM_MODEL_ID | quote }}
               {{- else }}
               value: {{ .Values.tgi.LLM_MODEL_ID | quote }}
@@ -88,6 +93,11 @@ spec:
             {{- if .Values.CHATQNA_TYPE }}
             - name: CHATQNA_TYPE
               value: {{ .Values.CHATQNA_TYPE | quote }}
+            {{- end }}
+            # Only set OPENAI_API_KEY when a valid key is provided (not the default placeholder)
+            {{- if eq (include "chatqna.shouldSetOpenAIKey" .) "true" }}
+            - name: OPENAI_API_KEY
+              value: {{ include "chatqna.openaiAPIKey" . | quote }}
             {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}

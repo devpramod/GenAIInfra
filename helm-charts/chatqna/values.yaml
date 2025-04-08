@@ -63,6 +63,7 @@ autoscaling:
 
 # Optional subcharts enablement and subcharts settings overwritten
 # LLM choice, tgi by default.
+# These will be disabled when global.LLM_SERVER_HOST_IP is specified
 tgi:
   enabled: false
   LLM_MODEL_ID: meta-llama/Meta-Llama-3-8B-Instruct
@@ -123,11 +124,13 @@ reranking-usvc:
   RERANK_BACKEND: "TEI"
 
 nginx:
+  enabled: true
   service:
     type: NodePort
 
 # Uncomment the following lines
 chatqna-ui:
+  enabled: true
   image:
     repository: opea/chatqna-ui
     tag: "latest"
@@ -141,6 +144,11 @@ global:
   https_proxy: ""
   no_proxy: ""
   HUGGINGFACEHUB_API_TOKEN: "insert-your-huggingface-token-here"
+  # OPENAI_API_KEY will be set to 'none' if left at default value
+  OPENAI_API_KEY: "insert-your-openai-api-key-here"
+  LLM_MODEL: "meta-llama/Meta-Llama-3-8B-Instruct"
+  # If LLM_SERVER_HOST_IP is set, it will be used instead of TGI or vLLM
+  LLM_SERVER_HOST_IP: "insert-your-llm-server-host-ip-here"
   # service account name to be shared with all parent/child charts.
   # If set, it will overwrite serviceAccount.name.
   # If set, and serviceAccount.create is false, it will assume this service account is already created by others.

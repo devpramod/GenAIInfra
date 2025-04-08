@@ -1,0 +1,24 @@
+apiVersion: v2
+appVersion: 0.1.0
+description: An umbrella Helm chart for the Productivity Suite combining ChatQnA, CodeGen, and Docsum
+name: productivity-suite
+type: application
+version: 0.1.0
+
+dependencies:
+  - name: chatqna
+    version: 0-latest
+    repository: "file://../chatqna"
+    condition: chatqna.enabled
+  - name: codegen
+    version: 0-latest
+    repository: "file://../codegen"
+    condition: codegen.enabled
+  - name: docsum
+    version: 0-latest
+    repository: "file://../docsum"
+    condition: docsum.enabled
+  - name: nginx
+    version: 0-latest
+    repository: "file://../common/nginx"
+    condition: nginx.enabled
