@@ -9,21 +9,11 @@
 # Set to "true" to enable verbose logging
 LOGFLAG: ""
 
-# This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
-replicaCount: 1
+# This is an umbrella chart that coordinates other microservices
+# It doesn't have its own container image
 
-# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
-image:
-  repository: opea/productivity-suite
-  # Uncomment the following line to set desired image pull policy if needed, as one of Always, IfNotPresent, Never.
-  # pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
-
-# This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-imagePullSecrets: []
 # This is to override the chart name.
-nameOverride: ""
+nameOverride: "prod-suite"
 fullnameOverride: ""
 
 #This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
@@ -164,13 +154,16 @@ nginx:
     client_max_body_size: "50m"
   routes:
     - path: /v1/chatqna
-      serviceName: RELEASE-NAME-chatqna
+      # Use fully qualified service name with namespace
+      serviceName: prod-suite-chatqna.chatqna.svc.cluster.local
       servicePort: 8888
     - path: /v1/codegen
-      serviceName: RELEASE-NAME-codegen
+      # Use fully qualified service name with namespace
+      serviceName: prod-suite-codegen.codegen.svc.cluster.local
       servicePort: 8080
     - path: /v1/docsum
-      serviceName: RELEASE-NAME-docsum
+      # Use fully qualified service name with namespace
+      serviceName: prod-suite-docsum.docsum.svc.cluster.local
       servicePort: 8000
 
 global:
@@ -203,6 +196,11 @@ global:
 # ChatQnA-specific configuration overrides
 chatqna:
   enabled: true
+  # Deploy to dedicated namespace
+  namespace: chatqna
+  createNamespace: true
+  # Use shorter name format
+  nameOverride: "prod-suite-chatqna"
   # Disable the individual nginx for chatqna since we're using the central one
   nginx:
     enabled: false
@@ -216,6 +214,11 @@ chatqna:
 # CodeGen-specific configuration overrides
 codegen:
   enabled: false
+  # Deploy to dedicated namespace
+  namespace: codegen
+  createNamespace: true
+  # Use shorter name format
+  nameOverride: "prod-suite-codegen"
   # Disable the individual nginx for codegen
   nginx:
     enabled: false
@@ -223,6 +226,11 @@ codegen:
 # DocSum-specific configuration overrides
 docsum:
   enabled: false
+  # Deploy to dedicated namespace
+  namespace: docsum
+  createNamespace: true
+  # Use shorter name format
+  nameOverride: "prod-suite-docsum"
   # Disable the individual nginx for docsum
   nginx:
     enabled: false
