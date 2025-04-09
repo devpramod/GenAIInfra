@@ -62,3 +62,36 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Determine if global LLM server is being used
+*/}}
+{{- define "codegen.useGlobalLLM" -}}
+{{- if .Values.global.LLM_SERVER_HOST_IP }}
+{{- true }}
+{{- else }}
+{{- false }}
+{{- end }}
+{{- end }}
+
+{{/*
+Check if OpenAI API Key is set and not default
+*/}}
+{{- define "codegen.isOpenAIKeySet" -}}
+{{- if and .Values.global.OPENAI_API_KEY (ne .Values.global.OPENAI_API_KEY "insert-your-openai-key-here") (ne .Values.global.OPENAI_API_KEY "none") }}
+{{- true }}
+{{- else }}
+{{- false }}
+{{- end }}
+{{- end }}
+
+{{/*
+Get OpenAI API Key
+*/}}
+{{- define "codegen.getOpenAIKey" -}}
+{{- if and .Values.global.OPENAI_API_KEY (ne .Values.global.OPENAI_API_KEY "insert-your-openai-key-here") (ne .Values.global.OPENAI_API_KEY "none") }}
+{{- .Values.global.OPENAI_API_KEY }}
+{{- else }}
+{{- "none" }}
+{{- end }}
+{{- end }}

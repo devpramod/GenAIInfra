@@ -34,8 +34,23 @@ spec:
       containers:
         - name: {{ .Release.Name }}
           env:
+            # Use global LLM server host IP if provided, otherwise use default LLM service
             - name: LLM_SERVICE_HOST_IP
+              {{- if .Values.global.LLM_SERVER_HOST_IP }}
+              value: {{ .Values.global.LLM_SERVER_HOST_IP }}
+              {{- else }}
               value: {{ .Release.Name }}-llm-uservice
+              {{- end }}
+            - name: LLM_SERVICE_PORT
+              value: "80"
+            {{- if .Values.global.LLM_MODEL }}
+            - name: LLM_MODEL
+              value: {{ .Values.global.LLM_MODEL | quote }}
+            {{- end }}
+            {{- if include "codegen.isOpenAIKeySet" . }}
+            - name: OPENAI_API_KEY
+              value: {{ include "codegen.getOpenAIKey" . | quote }}
+            {{- end }}
             #- name: MEGA_SERVICE_PORT
             #  value: {{ .Values.port }}
           securityContext:

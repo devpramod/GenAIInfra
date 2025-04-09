@@ -1,0 +1,111 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+# Values for codegen configured to use external LLM endpoint
+# This is a YAML-formatted file.
+
+replicaCount: 1
+
+image:
+  repository: opea/codegen
+  # Uncomment the following line to set desired image pull policy if needed, as one of Always, IfNotPresent, Never.
+  # pullPolicy: ""
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext:
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  runAsUser: 1000
+  capabilities:
+    drop:
+    - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
+port: 7778
+service:
+  type: ClusterIP
+  port: 7778
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# LLM choice - disabled both tgi and vllm when using external LLM
+tgi:
+  enabled: false
+  LLM_MODEL_ID: Qwen/Qwen2.5-Coder-7B-Instruct
+
+vllm:
+  enabled: false
+  LLM_MODEL_ID: Qwen/Qwen2.5-Coder-7B-Instruct
+
+# Disable llm-uservice when using external LLM
+llm-uservice:
+  enabled: false
+  TEXTGEN_BACKEND: vLLM
+  LLM_MODEL_ID: Qwen/Qwen2.5-Coder-7B-Instruct
+
+nginx:
+  enabled: true
+  service:
+    type: NodePort
+
+codegen-ui:
+  enabled: true
+  image:
+    repository: opea/codegen-ui
+    tag: "latest"
+  BACKEND_SERVICE_ENDPOINT: "/v1/codegen"
+  containerPort: 5173
+
+global:
+  http_proxy: ""
+  https_proxy: ""
+  no_proxy: ""
+  HUGGINGFACEHUB_API_TOKEN: "insert-your-huggingface-token-here"
+  # service account name to be shared with all parent/child charts.
+  sharedSAName: "codegen"
+  
+  # External LLM configuration
+  # Set LLM_SERVER_HOST_IP to your external LLM server endpoint
+  LLM_SERVER_HOST_IP: "your-llm-endpoint-here"
+  # Set LLM_MODEL to the model name you want to use
+  LLM_MODEL: "gpt-4o"
+  # Set OPENAI_API_KEY if using OpenAI-compatible endpoint
+  OPENAI_API_KEY: "insert-your-openai-key-here"
+  
+  # set modelUseHostPath or modelUsePVC to use model cache.
+  modelUseHostPath: ""
+  # modelUseHostPath: /mnt/opea-models
+  # modelUsePVC: model-volume
+
+  # Install Prometheus serviceMonitors for service components
+  monitoring: false
+
+  # Prometheus Helm install release name needed for serviceMonitors
+  prometheusRelease: prometheus-stack

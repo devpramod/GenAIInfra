@@ -17,12 +17,15 @@ dependencies:
   - name: llm-uservice
     version: 0-latest
     repository: "file://../common/llm-uservice"
+    condition: llm-uservice.enabled
   - name: ui
     version: 0-latest
     repository: "file://../common/ui"
     alias: codegen-ui
+    condition: codegen-ui.enabled
   - name: nginx
     version: 0-latest
     repository: "file://../common/nginx"
+    condition: nginx.enabled
 version: 0-latest
 appVersion: "v1.0"
