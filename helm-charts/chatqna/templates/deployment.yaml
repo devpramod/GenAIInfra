@@ -36,7 +36,9 @@ spec:
           env:
             - name: LLM_SERVER_HOST_IP
               # For FaqGen, llm-uservice is used.
-              {{- if eq .Values.CHATQNA_TYPE "CHATQNA_FAQGEN"}}
+              {{- if .Values.global.LLM_SERVER_HOST_IP }}
+              value: {{ .Values.global.LLM_SERVER_HOST_IP }}
+              {{- else if eq .Values.CHATQNA_TYPE "CHATQNA_FAQGEN"}}
               value: {{ .Release.Name }}-llm-uservice
               {{- else }}
               {{- if .Values.vllm.enabled }}
@@ -48,11 +50,17 @@ spec:
             - name: LLM_SERVER_PORT
               value: "80"
             - name: LLM_MODEL
-              {{- if .Values.vllm.enabled }}
+              {{- if .Values.global.LLM_MODEL }}
+              value: {{ .Values.global.LLM_MODEL | quote }}
+              {{- else if .Values.vllm.enabled }}
               value: {{ .Values.vllm.LLM_MODEL_ID | quote }}
               {{- else }}
               value: {{ .Values.tgi.LLM_MODEL_ID | quote }}
               {{- end }}
+            {{- if include "chatqna.isOpenAIKeySet" . }}
+            - name: OPENAI_API_KEY
+              value: {{ include "chatqna.getOpenAIKey" . | quote }}
+            {{- end }}
             - name: RERANK_SERVER_HOST_IP
               value: {{ .Release.Name }}-teirerank
             - name: RERANK_SERVER_PORT
