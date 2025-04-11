@@ -33,11 +33,21 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Release.Name }}
+          {{- if .Values.externalLLM.enabled }}
+          # Use external LLM service configuration
+          envFrom:
+            - configMapRef:
+                name: {{ include "docsum.fullname" . }}-external-llm
+          {{- else }}
+          # Use internal LLM service configuration
           env:
             - name: LLM_SERVICE_HOST_IP
               value: {{ include "llm-uservice.fullname" (index .Subcharts "llm-uservice") }}
             - name: LLM_SERVICE_PORT
               value: {{ index .Values "llm-uservice" "service" "port" | quote }}
+          {{- end }}
+          # ASR service configuration
+          env:
             - name: ASR_SERVICE_HOST_IP
               value: {{ include "whisper.fullname" (index .Subcharts "whisper") }}
             - name: ASR_SERVICE_PORT

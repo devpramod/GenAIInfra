@@ -1,0 +1,10 @@
+# External LLM configuration override
+externalLLM:
+  enabled: true  # Enable external LLM service
+  host: "your-llm-endpoint-here"  # External LLM service host
+  model: "gpt-4"  # LLM model to use
+  apiKey: "insert-your-openai-key-here"  # OpenAI API key for authentication
+
+# Disable internal LLM service when using external LLM
+llm-uservice:
+  enabled: false
