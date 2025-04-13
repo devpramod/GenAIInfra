@@ -1,7 +1,7 @@
 # Copyright (C) 2024 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 
-{{- if .Values.externalLLM.enabled }}
+{{- if and .Values.externalLLM (eq .Values.externalLLM.enabled true) }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -12,7 +12,10 @@ metadata:
 data:
   # External LLM service configuration
   LLM_SERVICE_HOST_IP: {{ .Values.externalLLM.host }}
-  LLM_SERVICE_PORT: {{ .Values.externalLLM.port | quote }}
+  LLM_SERVICE_PORT: {{ .Values.externalLLM.port | default "8080" | quote }}
   LLM_MODEL: {{ .Values.externalLLM.model | default "gpt-4" }}
   OPENAI_API_KEY: {{ .Values.externalLLM.apiKey | default "none" }}
+  # ASR service configuration
+  ASR_SERVICE_HOST_IP: {{ include "whisper.fullname" (index .Subcharts "whisper") }}
+  ASR_SERVICE_PORT: {{ index .Values "whisper" "service" "port" | quote }}
 {{- end }}
