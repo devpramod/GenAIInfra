@@ -11,7 +11,7 @@ metadata:
     app.kubernetes.io/component: external-llm
 data:
   # External LLM service configuration
-  LLM_SERVER_HOST_IP: {{ .Values.externalLLM.LLM_SERVER_HOST_IP }}
+  LLM_SERVICE_HOST_IP: {{ .Values.externalLLM.LLM_SERVICE_HOST_IP }}
   LLM_MODEL: {{ .Values.externalLLM.LLM_MODEL | default "gpt-4" }}
   OPENAI_API_KEY: {{ .Values.externalLLM.OPENAI_API_KEY | default "none" }}
 {{- end }}
