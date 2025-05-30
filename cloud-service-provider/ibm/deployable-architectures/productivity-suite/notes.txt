@@ -1,0 +1,2 @@
+issues:
+- terraform destroy isn't removing many namespaces such as keycloak, prompt, chathistory etc do kubectl get namespace
