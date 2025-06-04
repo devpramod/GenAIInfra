@@ -184,7 +184,7 @@ resource "helm_release" "ui" {
   depends_on = [resource.helm_release.keycloak]
 }
 
-# Nginx Helm Release (Central Gateway)
+# Nginx Helm Release (Central Gateway using common nginx chart)
 resource "helm_release" "nginx" {
   name             = "nginx"
   chart            = var.nginx_helm_repo
@@ -192,142 +192,15 @@ resource "helm_release" "nginx" {
   create_namespace = true
   timeout          = 600
 
-  # Use gateway values for central router functionality
+  # Use our custom gateway values for productivity suite
   values = [
-    file("${var.nginx_helm_repo}/gateway-values.yaml")
+    file("${path.root}/helm_values/nginx_gateway_values.yaml")
   ]
 
   # Override service type to LoadBalancer for external access
   set {
     name  = "service.type"
     value = "LoadBalancer"
-  }
-
-  # Environment variables for service endpoints
-  set {
-    name  = "env[0].name"
-    value = "FRONTEND_SERVICE_IP"
-  }
-  set {
-    name  = "env[0].value"
-    value = "ui.ui.svc.cluster.local"
-  }
-  
-  set {
-    name  = "env[1].name"
-    value = "FRONTEND_SERVICE_PORT"
-  }
-  set {
-    name  = "env[1].value"
-    value = "5173"
-  }
-  
-  set {
-    name  = "env[2].name"
-    value = "CHATQNA_SERVICE_IP"
-  }
-  set {
-    name  = "env[2].value"
-    value = "chatqna.chatqna.svc.cluster.local"
-  }
-  
-  set {
-    name  = "env[3].name"
-    value = "CHATQNA_SERVICE_PORT"
-  }
-  set {
-    name  = "env[3].value"
-    value = "8888"
-  }
-  
-  set {
-    name  = "env[4].name"
-    value = "CODEGEN_SERVICE_IP"
-  }
-  set {
-    name  = "env[4].value"
-    value = "codegen.codegen.svc.cluster.local"
-  }
-  
-  set {
-    name  = "env[5].name"
-    value = "CODEGEN_SERVICE_PORT"
-  }
-  set {
-    name  = "env[5].value"
-    value = "7778"
-  }
-  
-  set {
-    name  = "env[6].name"
-    value = "DOCSUM_SERVICE_IP"
-  }
-  set {
-    name  = "env[6].value"
-    value = "docsum.docsum.svc.cluster.local"
-  }
-  
-  set {
-    name  = "env[7].name"
-    value = "DOCSUM_SERVICE_PORT"
-  }
-  set {
-    name  = "env[7].value"
-    value = "8888"
-  }
-  
-  set {
-    name  = "env[8].name"
-    value = "DATAPREP_SERVICE_IP"
-  }
-  set {
-    name  = "env[8].value"
-    value = "chatqna-data-prep.chatqna.svc.cluster.local"
-  }
-  
-  set {
-    name  = "env[9].name"
-    value = "DATAPREP_SERVICE_PORT"
-  }
-  set {
-    name  = "env[9].value"
-    value = "6007"
-  }
-  
-  set {
-    name  = "env[10].name"
-    value = "CHATHISTORY_SERVICE_IP"
-  }
-  set {
-    name  = "env[10].value"
-    value = "chathistory-usvc.chathistory.svc.cluster.local"
-  }
-  
-  set {
-    name  = "env[11].name"
-    value = "CHATHISTORY_SERVICE_PORT"
-  }
-  set {
-    name  = "env[11].value"
-    value = "6012"
-  }
-  
-  set {
-    name  = "env[12].name"
-    value = "PROMPT_SERVICE_IP"
-  }
-  set {
-    name  = "env[12].value"
-    value = "prompt-usvc.prompt.svc.cluster.local"
-  }
-  
-  set {
-    name  = "env[13].name"
-    value = "PROMPT_SERVICE_PORT"
-  }
-  set {
-    name  = "env[13].value"
-    value = "6018"
   }
 
   # Ensure dependencies are deployed first
